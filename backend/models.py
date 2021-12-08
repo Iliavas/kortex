@@ -1,6 +1,10 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+
+from api.service.create_profile import create_profile
 
 
 class Position(models.Model):
@@ -29,10 +33,9 @@ class Profile(models.Model):
     tel = models.TextField()
 
 
-def createProfile(sender, **kwargs):
-    if kwargs["created"]:
-        instance = kwargs["instance"]
-        Profile.objects.create(name=kwargs["instance"], user=kwargs["instance"])
+post_save.connect(create_profile, sender=User)
 
 
-post_save.connect(createProfile, sender=User)
+class History(models.Model):
+    date = models.DateTimeField(datetime.datetime)
+    file = models.FileField( null=True, blank=True)
